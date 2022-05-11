@@ -1,6 +1,7 @@
 # Created by .ignore support plugin (hsz.mobi)
 ### Python template
 # Custom
+data/image_retrieval
 data/dataset_from_tirg.py
 
 # Byte-compiled / optimized / DLL files

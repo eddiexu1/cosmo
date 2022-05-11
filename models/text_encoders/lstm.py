@@ -5,7 +5,6 @@ import torch.nn.functional as F
 from trainers.abc import AbstractBaseTextEncoder
 from models.text_encoders.utils import retrieve_last_timestamp_output
 
-
 class SimpleLSTMEncoder(AbstractBaseTextEncoder):
     def __init__(self, vocabulary_len, padding_idx, feature_size, *args, **kwargs):
         super().__init__(vocabulary_len, padding_idx, feature_size, *args, **kwargs)

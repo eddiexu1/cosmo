@@ -2,9 +2,35 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+from bert_serving.client import BertClient
 from trainers.abc import AbstractBaseTextEncoder
 from models.text_encoders.utils import retrieve_last_timestamp_output
 
+class BERTEncoder(AbstractBaseTextEncoder):
+    def __init__(self, vocabulary_len, padding_idx, feature_size, *args, **kwargs):
+        super().__init__(vocabulary_len, padding_idx, feature_size, *args, **kwargs)
+        self.bc = BertClient()
+        bert_out_size = 768
+        feature_size = feature_size
+
+        self.fc = nn.Sequential(
+            nn.Dropout(p=0.1),
+            nn.Linear(bert_out_size, feature_size),
+        )
+
+    def forward(self, x, lengths):
+        # x is a tensor that has shape of (batch_size * seq_len)
+
+        bert_outputs = self.bc.encode(x)
+        outputs = retrieve_last_timestamp_output(bert_outputs, lengths)
+
+        outputs = self.fc(outputs)
+        return outputs
+
+    @classmethod
+    def code(cls) -> str:
+        return 'bert'
+    
 class SimpleLSTMEncoder(AbstractBaseTextEncoder):
     def __init__(self, vocabulary_len, padding_idx, feature_size, *args, **kwargs):
         super().__init__(vocabulary_len, padding_idx, feature_size, *args, **kwargs)
